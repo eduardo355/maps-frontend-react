@@ -1,15 +1,13 @@
-import { useEffect, useReducer, type ReactElement } from 'react'
-import { LocationContext } from '../application/location-context'
-import { locationReducer } from '../application/location-reducer'
+import { Map, Marker, Popup } from 'mapbox-gl'
+import type { LocationState } from '../domain/location'
 import { getLocation } from '../infrastructure/location-api'
-
-export interface LocationState {
-  isLoading: boolean
-  userLocation?: [number, number]
-}
+import { useEffect, useReducer, type ReactElement } from 'react'
+import { LocationContext, locationReducer } from '../application'
 
 const INITIAL_STATE: LocationState = {
+  map: undefined,
   isLoading: true,
+  isMapReady: false,
   userLocation: undefined,
 }
 
@@ -26,8 +24,14 @@ export const LocationProvider = ({ children }: Props) => {
     )
   }, [])
 
+  const setMap = (map: Map) => {
+    const myLocationPopup = new Popup()
+    new Marker().setLngLat(map.getCenter()).setPopup(myLocationPopup).addTo(map)
+    dispatch({ type: 'setMap', payload: map })
+  }
+
   return (
-    <LocationContext.Provider value={{ ...state }}>
+    <LocationContext.Provider value={{ ...state, setMap }}>
       {children}
     </LocationContext.Provider>
   )
