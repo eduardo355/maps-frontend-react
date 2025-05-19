@@ -1,6 +1,9 @@
-import type { LocationState } from '../ui/location-provider'
+import type { Map } from 'mapbox-gl'
+import type { LocationState } from '../domain/location'
 
-type LocationActions = { type: 'setUserLocation'; payload: [number, number] }
+type LocationActions =
+  | { type: 'setMap'; payload: Map }
+  | { type: 'setUserLocation'; payload: [number, number] }
 
 export const locationReducer = (
   state: LocationState,
@@ -12,6 +15,12 @@ export const locationReducer = (
         ...state,
         isLoading: false,
         userLocation: action.payload,
+      }
+    case 'setMap':
+      return {
+        ...state,
+        isMapReady: true,
+        map: action.payload,
       }
     default:
       return state
