@@ -1,7 +1,7 @@
 import { useEffect, useReducer, type ReactElement } from 'react'
 import { LocationContext } from '../application/location-context'
 import { locationReducer } from '../application/location-reducer'
-import { getLocation } from '../application/get-location'
+import { getLocation } from '../infrastructure/location-api'
 
 export interface LocationState {
   isLoading: boolean
