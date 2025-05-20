@@ -78,4 +78,3 @@ También puedes instalar extensiones como:
 ---
 
 Desarrollado con 💻 por [Eduardo](https://github.com/eduardo355)
-```
