@@ -1,11 +1,10 @@
+import mapboxgl from 'mapbox-gl'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import './index.css'
 import App from './App.tsx'
-import mapboxgl from 'mapbox-gl'
+import './index.css'
 
-mapboxgl.accessToken =
-  'pk.eyJ1IjoiY291Y2gzNTUiLCJhIjoiY21hcTFuNmFrMDVoZzJ1cTQ5Mm03dDh3diJ9.wu8nHyOe1oWdeNggfsZ4yQ'
+mapboxgl.accessToken = import.meta.env.VITE_ACCESS_TOKEN
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
