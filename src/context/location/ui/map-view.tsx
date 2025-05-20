@@ -2,6 +2,7 @@ import mapboxgl from 'mapbox-gl'
 import { useContext, useLayoutEffect, useRef } from 'react'
 import { LocationContext } from '../application/location-context'
 import { LocationButton } from './location-button'
+import { SearchBar } from './search-bar'
 
 export const MapView = () => {
   const mapDiv = useRef<HTMLDivElement>(null)
@@ -23,7 +24,12 @@ export const MapView = () => {
 
   return (
     <div ref={mapDiv} className="w-full h-full">
-      {isMapReady && <LocationButton />}
+      {isMapReady && (
+        <>
+          <SearchBar />
+          <LocationButton />
+        </>
+      )}
     </div>
   )
 }
