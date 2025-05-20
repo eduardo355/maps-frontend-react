@@ -1,14 +1,14 @@
 import { Map, Marker, Popup } from 'mapbox-gl'
-import type { LocationState } from '../domain/location'
-import { getLocation } from '../infrastructure/location-api'
 import { useEffect, useReducer, type ReactElement } from 'react'
 import { LocationContext, locationReducer } from '../application'
+import type { LocationState } from '../domain/location'
+import { getLocation } from '../infrastructure/location-api'
 
 const INITIAL_STATE: LocationState = {
-  map: undefined,
-  isLoading: true,
-  isMapReady: false,
   userLocation: undefined,
+  isMapReady: false,
+  isLoading: true,
+  map: undefined,
 }
 
 interface Props {
