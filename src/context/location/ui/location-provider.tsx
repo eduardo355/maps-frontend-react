@@ -1,7 +1,9 @@
-import { Map, Marker, Popup } from 'mapbox-gl'
+import { LngLatBounds, Map, Marker, Popup, type AnySourceData } from 'mapbox-gl'
 import { useEffect, useReducer, type ReactElement } from 'react'
 import { LocationContext, locationReducer } from '../application'
+import type { DirectionsResponse } from '../domain/direction'
 import type { LocationState, PlacesResponse } from '../domain/location'
+import directionApi from '../infrastructure/direction-api'
 import { getLocation } from '../infrastructure/location-api'
 import searchApi from '../infrastructure/search-api'
 
@@ -50,6 +52,69 @@ export const LocationProvider = ({ children }: Props) => {
     dispatch({ type: 'setPlaces', payload: resp.data.features })
   }
 
+  const getRouteBetweenPoints = async (
+    start: [number, number],
+    end: [number, number]
+  ) => {
+    const resp = await directionApi.get<DirectionsResponse>(
+      `/mapbox/driving/${start.join(',')};${end.join(',')}`
+    )
+
+    const { geometry } = resp.data.routes[0]
+    const { coordinates } = geometry
+    // let kms = distance / 1000
+    // kms = Math.round(kms * 100)
+    // kms /= 100
+
+    // const minutes = Math.floor(duration / 60)
+
+    const bounds = new LngLatBounds(start, start)
+
+    for (const coordinate of coordinates) {
+      const newCordinate: [number, number] = [coordinate[0], coordinate[1]]
+      bounds.extend(newCordinate)
+    }
+
+    state.map?.fitBounds(bounds, { padding: 100 })
+
+    const sourceData: AnySourceData = {
+      type: 'geojson',
+      data: {
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            properties: {},
+            geometry: {
+              type: 'LineString',
+              coordinates: coordinates,
+            },
+          },
+        ],
+      },
+    }
+
+    if (state.map?.getLayer('RouteString')) {
+      state.map.removeLayer('RouteString')
+      state.map.removeSource('RouteString')
+    }
+
+    state.map?.addSource('RouteString', sourceData)
+    state.map?.addLayer({
+      id: 'RouteString',
+      type: 'line',
+      source: 'RouteString',
+      layout: {
+        'line-cap': 'round',
+        'line-join': 'round',
+      },
+      paint: {
+        'line-color': 'black',
+        'line-width': 3,
+      },
+    })
+  }
+
   useEffect(() => {
     state.markers.forEach((marker) => marker.remove())
     const newMarkers: Marker[] = []
@@ -71,7 +136,9 @@ export const LocationProvider = ({ children }: Props) => {
   }, [state.places, state.map])
 
   return (
-    <LocationContext.Provider value={{ ...state, setMap, searchPlacesByTerm }}>
+    <LocationContext.Provider
+      value={{ ...state, setMap, searchPlacesByTerm, getRouteBetweenPoints }}
+    >
       {children}
     </LocationContext.Provider>
   )

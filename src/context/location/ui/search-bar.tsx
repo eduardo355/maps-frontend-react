@@ -2,18 +2,27 @@ import { useContext, type ChangeEvent } from 'react'
 import { LocationContext } from '../application'
 
 export const SearchBar = () => {
-  const { searchPlacesByTerm, places, map } = useContext(LocationContext)
+  const {
+    map,
+    places,
+    userLocation,
+    searchPlacesByTerm,
+    getRouteBetweenPoints,
+  } = useContext(LocationContext)
 
   const onChangeQuery = (e: ChangeEvent<HTMLInputElement>) => {
     searchPlacesByTerm(e.target.value)
   }
 
   const onClick = (coords: number[]) => {
+    if (!userLocation) return
+
     const [lng, lat] = coords
     map?.flyTo({
       center: [lng, lat],
-      zoom: 14,
     })
+
+    getRouteBetweenPoints(userLocation, [lng, lat])
   }
 
   return (

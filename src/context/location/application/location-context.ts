@@ -10,6 +10,10 @@ interface LocationContextProps {
   isLoading: boolean
   places?: Feature[]
   map?: Map
+  getRouteBetweenPoints: (
+    start: [number, number],
+    end: [number, number]
+  ) => Promise<void>
 }
 
 export const LocationContext = createContext({} as LocationContextProps)
